@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/TopBar">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            style="@style/IconButton"
+            android:layout_marginLeft="-10dp"
+            android:contentDescription="返回"
+            android:src="@drawable/ic_back_24" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="6dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="渠道"
+                android:textColor="@color/text"
+                android:textSize="15.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="每个渠道独立保存 Key"
+                android:textColor="@color/text_faint"
+                android:textSize="10.5sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnAdd"
+            style="@style/TopBarButton"
+            android:text="＋ 添加" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:paddingLeft="14dp"
+        android:paddingTop="6dp"
+        android:paddingRight="14dp"
+        android:paddingBottom="14dp"
+        android:scrollbars="none" />
+
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="90dp"
+        android:text="还没有渠道，点右上角添加"
+        android:textColor="@color/text_faint"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingTop="6dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="14dp"
+        android:text="点一行切换/编辑，长按删除。中转站、自建网关选「自定义」，把对方给的地址和路径填进去即可。"
+        android:textColor="@color/text_faint"
+        android:textSize="11sp"
+        android:lineSpacingExtra="2dp" />
+</LinearLayout>

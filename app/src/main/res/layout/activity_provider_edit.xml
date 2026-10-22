@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/TopBar">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            style="@style/IconButton"
+            android:layout_marginLeft="-10dp"
+            android:contentDescription="返回"
+            android:src="@drawable/ic_back_24" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="6dp"
+            android:text="编辑渠道"
+            android:textColor="@color/text"
+            android:textSize="15.5sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnSave"
+            style="@style/TopBarButton"
+            android:text="保存"
+            android:textColor="@color/accent" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="18dp"
+            android:paddingTop="6dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="30dp">
+
+            <TextView
+                style="@style/FieldLabel"
+                android:text="名称" />
+
+            <EditText
+                android:id="@+id/name"
+                style="@style/Field"
+                android:hint="例如：我的中转站"
+                android:inputType="text"
+                android:singleLine="true" />
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="16dp"
+                android:text="接口地址" />
+
+            <EditText
+                android:id="@+id/baseUrl"
+                style="@style/Field"
+                android:hint="https://api.example.com/v1"
+                android:inputType="textUri"
+                android:singleLine="true" />
+
+            <TextView
+                style="@style/FieldHint"
+                android:text="填到域名 + 版本号即可（如 https://api.siliconflow.cn/v1），不要带 /chat/completions。" />
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="16dp"
+                android:text="请求路径" />
+
+            <EditText
+                android:id="@+id/path"
+                style="@style/Field"
+                android:hint="/chat/completions"
+                android:inputType="textUri"
+                android:singleLine="true" />
+
+            <TextView
+                style="@style/FieldHint"
+                android:text="多数渠道用默认值；有的中转站要 /v1/chat/completions，也有直接给完整 URL 的。" />
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="16dp"
+                android:text="API Key" />
+
+            <EditText
+                android:id="@+id/key"
+                style="@style/Field"
+                android:hint="sk-..."
+                android:inputType="textPassword"
+                android:singleLine="true" />
+
+            <TextView
+                style="@style/FieldHint"
+                android:text="只保存在本机。每个渠道各存一份，切换时不会覆盖。" />
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="16dp"
+                android:text="模型" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/model"
+                    style="@style/Field"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:hint="deepseek-chat"
+                    android:inputType="text"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:id="@+id/btnFetchModels"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/bg_chip"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingLeft="14dp"
+                    android:paddingRight="14dp"
+                    android:text="拉取"
+                    android:textColor="@color/accent"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/FieldHint"
+                android:text="点「拉取」从这个渠道读取可用模型列表（需要先填好地址和 Key）。" />
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="16dp"
+                android:text="鉴权方式" />
+
+            <TextView
+                android:id="@+id/authStyle"
+                style="@style/Field"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="Bearer 令牌" />
+
+            <CheckBox
+                android:id="@+id/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:paddingLeft="2dp"
+                android:text="允许模型调用本地工具（function calling）"
+                android:textColor="@color/text"
+                android:textSize="13sp" />
+
+            <TextView
+                style="@style/FieldHint"
+                android:paddingLeft="2dp"
+                android:text="关掉后只做普通对话。部分渠道的模型不支持工具调用，开着会报 400（程序会自动重试一次）。" />
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="16dp"
+                android:text="额外请求头（可选）" />
+
+            <EditText
+                android:id="@+id/headers"
+                style="@style/Field"
+                android:gravity="top|start"
+                android:hint="X-Custom-Header: value"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:minLines="2"
+                android:textSize="12sp" />
+
+            <TextView
+                style="@style/FieldHint"
+                android:text="每行一个 Header: value。一般留空；某些中转站要求额外标记时才用。" />
+
+            <TextView
+                android:id="@+id/btnTest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:text="测试连接"
+                android:textColor="@color/text"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

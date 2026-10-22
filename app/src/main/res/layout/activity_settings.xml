@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/TopBar">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            style="@style/IconButton"
+            android:layout_marginLeft="-10dp"
+            android:contentDescription="返回"
+            android:src="@drawable/ic_back_24" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="6dp"
+            android:text="设置"
+            android:textColor="@color/text"
+            android:textSize="15.5sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnSave"
+            style="@style/TopBarButton"
+            android:text="保存"
+            android:textColor="@color/accent" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="18dp"
+            android:paddingTop="4dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="30dp">
+
+            <TextView
+                style="@style/FieldLabel"
+                android:text="当前渠道" />
+
+            <LinearLayout
+                android:id="@+id/providerCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingTop="14dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/providerName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text=""
+                        android:textColor="@color/text"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="管理 ›"
+                        android:textColor="@color/accent"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/providerBase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="@color/text_faint"
+                    android:textSize="10.5sp" />
+
+                <TextView
+                    android:id="@+id/providerState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text=""
+                    android:textColor="@color/text_dim"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="18dp"
+                android:text="模型" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/model"
+                    style="@style/Field"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:hint="deepseek-chat"
+                    android:inputType="text"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:id="@+id/btnFetchModels"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/bg_chip"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingLeft="14dp"
+                    android:paddingRight="14dp"
+                    android:text="拉取"
+                    android:textColor="@color/accent"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/FieldHint"
+                android:text="「拉取」会向当前渠道请求 /models，列出可用模型供选择。换模型不用改代码，也不用重填 Key。" />
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="18dp"
+                android:text="系统提示词" />
+
+            <EditText
+                android:id="@+id/systemPrompt"
+                style="@style/Field"
+                android:gravity="top|start"
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="4"
+                android:textSize="13sp" />
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="18dp"
+                android:text="温度（0 - 2）" />
+
+            <EditText
+                android:id="@+id/temperature"
+                style="@style/Field"
+                android:hint="0.7"
+                android:inputType="numberDecimal"
+                android:singleLine="true" />
+
+            <TextView
+                style="@style/FieldLabel"
+                android:layout_marginTop="18dp"
+                android:text="单次最大输出 tokens" />
+
+            <EditText
+                android:id="@+id/maxTokens"
+                style="@style/Field"
+                android:hint="4096"
+                android:inputType="number"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/workspaceInfo"
+                style="@style/FieldHint"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="0dp"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/btnTest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:background="@drawable/bg_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:text="测试当前渠道"
+                android:textColor="@color/text"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/btnClear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:text="清空所有会话"
+                android:textColor="@color/err"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

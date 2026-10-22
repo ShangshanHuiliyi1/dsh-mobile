@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="auth_styles">
+        <item>Bearer 令牌（大多数渠道）</item>
+        <item>api-key 请求头（Azure 风格）</item>
+        <item>无需鉴权（本地模型）</item>
+    </string-array>
+</resources>

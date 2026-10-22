@@ -1,0 +1,16 @@
+# --- 构建产物 ---
+/build/
+/dist/
+*.apk
+*.idsig
+
+# --- 本地工具链（Android SDK / 下载包 / 调试证书）---
+/toolchain/
+
+# --- 编辑器与系统 ---
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+*.log

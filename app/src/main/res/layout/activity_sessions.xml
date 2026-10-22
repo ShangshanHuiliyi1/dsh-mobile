@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/TopBar">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            style="@style/IconButton"
+            android:layout_marginLeft="-10dp"
+            android:contentDescription="返回"
+            android:src="@drawable/ic_back_24" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="6dp"
+            android:text="会话"
+            android:textColor="@color/text"
+            android:textSize="15.5sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnNew"
+            style="@style/TopBarButton"
+            android:text="＋ 新建" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@color/line_soft"
+        android:dividerHeight="1dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="4dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:scrollbars="none" />
+
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="80dp"
+        android:text="还没有会话"
+        android:textColor="@color/text_faint"
+        android:textSize="13sp"
+        android:visibility="gone" />
+</LinearLayout>

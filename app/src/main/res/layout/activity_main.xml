@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/TopBar">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="DSH"
+                android:textColor="@color/text"
+                android:textSize="15.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:singleLine="true"
+                android:text="就绪"
+                android:textColor="@color/text_faint"
+                android:textSize="10.5sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnNew"
+            style="@style/IconButton"
+            android:contentDescription="新建会话"
+            android:src="@drawable/ic_plus_24" />
+
+        <ImageView
+            android:id="@+id/btnSessions"
+            style="@style/IconButton"
+            android:layout_marginLeft="2dp"
+            android:contentDescription="会话列表"
+            android:src="@drawable/ic_history_24" />
+
+        <ImageView
+            android:id="@+id/btnSettings"
+            style="@style/IconButton"
+            android:layout_marginLeft="2dp"
+            android:contentDescription="设置"
+            android:src="@drawable/ic_sliders_24" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/feed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="18dp"
+            android:paddingTop="8dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="18dp" />
+    </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line_soft" />
+
+    <LinearLayout
+        android:id="@+id/inputbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:paddingLeft="14dp"
+        android:paddingTop="10dp"
+        android:paddingRight="14dp"
+        android:paddingBottom="10dp">
+
+        <EditText
+            android:id="@+id/input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_input"
+            android:gravity="center_vertical|start"
+            android:hint="@string/hint_input"
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLines="5"
+            android:minHeight="48dp"
+            android:paddingLeft="18dp"
+            android:paddingTop="13dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="13dp"
+            android:textColor="@color/text"
+            android:textColorHint="@color/text_faint"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/send"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/bg_send_button"
+            android:clickable="true"
+            android:contentDescription="发送"
+            android:focusable="true"
+            android:padding="13dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_send_24" />
+    </LinearLayout>
+</LinearLayout>

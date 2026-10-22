@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 石墨黑底，比纯黑略暖，避免 OLED 上的死黑感 -->
+    <color name="bg">#0A0B0D</color>
+    <!-- 卡片 / 气泡 -->
+    <color name="surface">#12151A</color>
+    <!-- 输入框 / 次级容器 -->
+    <color name="surface2">#171A20</color>
+    <!-- 描边 -->
+    <color name="line">#232730</color>
+    <!-- 发丝分隔线 -->
+    <color name="line_soft">#191D23</color>
+
+    <color name="text">#ECEEF1</color>
+    <color name="text_dim">#98A0AC</color>
+    <color name="text_faint">#6B7280</color>
+
+    <!-- 唯一强调色，只用在发送键、当前状态、链接 -->
+    <color name="accent">#6D82F7</color>
+    <color name="accent_dim">#3E4B8C</color>
+
+    <color name="user_bubble">#1B2030</color>
+    <color name="bubble_line">#2B3345</color>
+    <color name="code_bg">#0B0D11</color>
+    <color name="tool_bg">#111419</color>
+    <color name="ok">#5CC98A</color>
+    <color name="err">#E5706A</color>
+</resources>
