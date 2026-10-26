@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.TypedValue;
@@ -24,8 +25,11 @@ import com.dsh.mobile.core.Config;
 import com.dsh.mobile.core.Message;
 import com.dsh.mobile.core.Provider;
 import com.dsh.mobile.core.Session;
+import com.dsh.mobile.core.WorkspaceImporter;
 import com.dsh.mobile.ui.MessageRow;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -122,12 +126,72 @@ public class MainActivity extends Activity implements Agent.Listener {
             }
         });
 
+        findViewById(R.id.btnFiles).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, FilesActivity.class));
+            }
+        });
+
         buildEmptyState();
         renderAll();
 
         if (!cfg.hasApiKey()) {
             promptKey(true);
         }
+
+        handleShareIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleShareIntent(intent);
+    }
+
+    /** 从别的应用「分享」文件进来：导入工作区，并预填一句提示 */
+    private void handleShareIntent(Intent intent) {
+        if (intent == null) return;
+        String action = intent.getAction();
+        if (!Intent.ACTION_SEND.equals(action) && !Intent.ACTION_SEND_MULTIPLE.equals(action)) return;
+
+        ArrayList<Uri> uris = new ArrayList<>();
+        if (Intent.ACTION_SEND.equals(action)) {
+            Uri u = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (u != null) uris.add(u);
+        } else {
+            ArrayList<Uri> list = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+            if (list != null) uris.addAll(list);
+        }
+        if (uris.isEmpty()) return;
+        intent.setAction(null); // 避免重复导入
+        importShared(uris);
+    }
+
+    private void importShared(final ArrayList<Uri> uris) {
+        toast("正在导入 " + uris.size() + " 个文件…");
+        final File dir = agent.store().workspace();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final WorkspaceImporter.Result r =
+                        WorkspaceImporter.importTo(MainActivity.this, dir, uris, 50L * 1024 * 1024);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        StringBuilder sb = new StringBuilder("已导入 ").append(r.ok).append(" 个文件到工作区");
+                        if (r.skipped > 0) sb.append("，").append(r.skipped).append(" 个超过 50MB 已跳过");
+                        if (!r.failed.isEmpty()) sb.append("，失败：").append(r.failed);
+                        toast(sb.toString());
+                        if (r.ok > 0 && input.getText().toString().trim().isEmpty()) {
+                            input.setText("我刚往工作区放了 " + r.ok + " 个文件，先看看它们是什么");
+                            input.setSelection(input.getText().length());
+                        }
+                    }
+                });
+            }
+        }, "dsh-share-import").start();
     }
 
     @Override

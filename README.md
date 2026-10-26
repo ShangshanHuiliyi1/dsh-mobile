@@ -69,6 +69,24 @@
 - **Markdown 渲染**：代码块（带语言标签 + 一键复制）、行内代码、标题、列表、粗体、链接。
 - **思考过程**：`deepseek-reasoner` 的 `reasoning_content` 折叠展示，可选展开。
 - **可配置**：温度、最大输出、系统提示词对所有渠道生效；Key/地址/模型按渠道隔离。
+- **工作区文件管理**：从手机导入、新建文本文件/文件夹、预览、重命名、删除（见下）。
+
+## 工作区文件
+
+Agent 的所有文件操作都在应用私有目录 `/data/user/0/com.dsh.mobile/files/workspace/`。
+以前只能由 Agent 自己往里写，现在用户也能放文件进去了——聊天输入框左侧的文件夹按钮即可进入：
+
+![工作区文件](docs/shot-files.png)
+
+- **从手机添加**：走系统文件选择器（SAF），支持多选，选中即复制进当前目录；重名自动加 `(1)`。
+- **新建文本文件**：填文件名 + 初始内容，建完就能让 Agent 接着改。
+- **新建文件夹 / 进入子目录**：面包屑显示相对路径，返回键逐级退出。
+- **点文件预览**：文本按等宽字体显示（限 120 KB），二进制文件会提示；「复制相对路径」方便贴给 Agent。
+- **长按**：重命名 / 删除 / 复制相对路径。删除文件夹会连同内容一起删，有二次确认。
+- **从别的应用分享进来**：任意应用里「分享 → DSH Mobile」即可直接把文件导入工作区根目录，
+  并自动预填一句「我刚往工作区放了 N 个文件」。
+
+单个文件上限 50 MB；所有路径都做了解析校验，越不过工作区根目录。
 
 ## 视觉约定
 
@@ -175,12 +193,14 @@ app/src/main/
     SettingsActivity.java    设置（渠道卡片 / 模型 / 全局参数）
     ProvidersActivity.java   渠道列表（切换 / 添加 / 删除）
     ProviderEditActivity.java 渠道编辑（地址、路径、Key、模型、鉴权、工具开关）
+    FilesActivity.java       工作区文件（导入 / 新建 / 预览 / 重命名 / 删除）
     core/
       Config.java            全局配置 + 渠道仓库入口
       Provider.java          一个渠道的模型（URL 拼接、鉴权头、掩码）
       ProviderStore.java     渠道持久化 + 旧版单 Key 迁移（进程内单例）
       Presets.java           各渠道预设模板
       ModelsApi.java         /models 拉取 + 连通性测试
+      WorkspaceImporter.java content:// 文件复制进工作区（选择器与分享共用）
       Message.java           消息模型（含 reasoning / toolCalls）
       ToolCall.java          工具调用 + 执行结果
       Session.java           会话模型

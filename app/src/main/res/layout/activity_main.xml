@@ -93,6 +93,15 @@
         android:paddingRight="14dp"
         android:paddingBottom="10dp">
 
+        <ImageView
+            android:id="@+id/btnFiles"
+            style="@style/IconButton"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="-6dp"
+            android:layout_marginRight="4dp"
+            android:contentDescription="工作区文件"
+            android:src="@drawable/ic_folder_24" />
+
         <EditText
             android:id="@+id/input"
             android:layout_width="0dp"

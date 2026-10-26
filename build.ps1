@@ -13,8 +13,8 @@ $Dist     = "$Root\dist"
 $env:JAVA_HOME = $JavaHome
 $env:PATH = "$JavaHome\bin;$BT;$env:PATH"
 
-$VersionCode = 4
-$VersionName = "1.3.0"
+$VersionCode = 5
+$VersionName = "1.4.0"
 
 Write-Host "== 0/7 准备目录" -ForegroundColor Cyan
 foreach ($d in "$Out\gen", "$Out\classes", "$Out\dex", $Dist) {
@@ -53,17 +53,39 @@ $sources += (Get-ChildItem "$Src\java" -Recurse -Filter *.java | ForEach-Object 
 $sources += (Get-ChildItem "$Out\gen" -Recurse -Filter *.java | ForEach-Object { $_.FullName })
 Write-Host ("    java 文件数: " + $sources.Count)
 
-$javacArgs = @("-encoding", "UTF-8", "--release", "8", "-nowarn", "-Xlint:-options",
+$javacArgs = @("-encoding", "UTF-8", "--release", "8", "-nowarn", "-Xlint:none",
     "-classpath", $AndroidJar, "-d", "$Out\classes") + $sources
-& "$JavaHome\bin\javac.exe" @javacArgs
-if ($LASTEXITCODE -ne 0) { throw "javac 失败" }
+# javac 会把「使用了已过时 API」之类的提示写到 stderr，不能因此中断，只看退出码
+$strict = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+$javacLog = & "$JavaHome\bin\javac.exe" @javacArgs 2>&1
+$javacExit = $LASTEXITCODE
+$ErrorActionPreference = $strict
+if ($javacExit -ne 0) {
+    $javacLog | ForEach-Object { Write-Host $_ }
+    throw "javac 失败"
+}
 
 Write-Host "== 4/7 dex 转换" -ForegroundColor Cyan
 if (Test-Path "$Out\dex") { Remove-Item -Recurse -Force "$Out\dex" }
 New-Item -ItemType Directory -Force -Path "$Out\dex" | Out-Null
 $classes = Get-ChildItem "$Out\classes" -Recurse -Filter *.class | ForEach-Object { $_.FullName }
 Write-Host ("    class 数量: " + $classes.Count)
-$d8args = @("--release", "--min-api", "24", "--lib", $AndroidJar, "--output", "$Out\dex") + $classes
+
+# class 多了以后逐个传参会超过 Windows 命令行上限，先打成 jar 再交给 d8
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$classesJar = "$Out\classes.jar"
+if (Test-Path $classesJar) { Remove-Item $classesJar -Force }
+$jar = [System.IO.Compression.ZipFile]::Open($classesJar, 'Create')
+try {
+    foreach ($c in $classes) {
+        $rel = $c.Substring("$Out\classes".Length + 1).Replace('\', '/')
+        [void][System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($jar, $c, $rel, [System.IO.Compression.CompressionLevel]::Optimal)
+    }
+} finally {
+    $jar.Dispose()
+}
+$d8args = @("--release", "--min-api", "24", "--lib", $AndroidJar, "--output", "$Out\dex", $classesJar)
 & "$BT\d8.bat" @d8args
 if ($LASTEXITCODE -ne 0) { throw "d8 失败" }
 
