@@ -115,8 +115,14 @@ public class Agent {
     }
 
     public void send(String text) {
+        send(text, null);
+    }
+
+    public void send(String text, List<Attachment> attachments) {
         if (running) return;
-        if (text == null || text.trim().isEmpty()) return;
+        String body = text == null ? "" : text.trim();
+        boolean hasAttachments = attachments != null && !attachments.isEmpty();
+        if (body.isEmpty() && !hasAttachments) return;
 
         Provider provider = cfg.providers().active();
         if (provider.model == null || provider.model.trim().isEmpty()) {
@@ -134,12 +140,13 @@ public class Agent {
         lastUiPush = 0;
         postBusy(true);
 
-        Message user = Message.user(text.trim());
+        Message user = Message.user(body);
+        if (hasAttachments) user.attachments.addAll(attachments);
         s.messages.add(user);
         emitAppend(user);
 
         if (s.title == null || s.title.trim().isEmpty() || "新会话".equals(s.title.trim())) {
-            s.title = titleOf(text);
+            s.title = titleOf(body.isEmpty() ? attachments.get(0).name : body);
         }
         store.save(s);
 

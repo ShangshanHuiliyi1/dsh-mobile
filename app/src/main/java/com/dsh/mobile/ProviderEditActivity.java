@@ -67,6 +67,7 @@ public class ProviderEditActivity extends Activity {
         headers.setText(provider.extraHeaders);
         updateAuthLabel();
         ((android.widget.CheckBox) findViewById(R.id.tools)).setChecked(provider.toolsEnabled);
+        ((android.widget.CheckBox) findViewById(R.id.vision)).setChecked(provider.vision);
 
         authStyleView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +141,7 @@ public class ProviderEditActivity extends Activity {
         provider.model = model.getText().toString().trim();
         provider.extraHeaders = headers.getText().toString().trim();
         provider.toolsEnabled = ((android.widget.CheckBox) findViewById(R.id.tools)).isChecked();
+        provider.vision = ((android.widget.CheckBox) findViewById(R.id.vision)).isChecked();
 
         store.save(provider);
         return true;

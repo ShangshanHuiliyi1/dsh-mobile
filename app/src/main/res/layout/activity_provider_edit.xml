@@ -168,6 +168,22 @@
                 android:textColor="@color/text"
                 android:textSize="13sp" />
 
+            <CheckBox
+                android:id="@+id/vision"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:paddingLeft="2dp"
+                android:text="支持图片输入（多模态）"
+                android:textColor="@color/text"
+                android:textSize="13sp" />
+
+            <TextView
+                style="@style/FieldHint"
+                android:paddingLeft="2dp"
+                android:text="开着，聊天里附加的图片会按 OpenAI 多模态格式（image_url）发送；关着则只发送文件名说明。
+DeepSeek 官方模型不支持图片输入；Qwen-VL、GLM-4V、GPT-4o 等才需要打开。" />
+
             <TextView
                 style="@style/FieldHint"
                 android:paddingLeft="2dp"

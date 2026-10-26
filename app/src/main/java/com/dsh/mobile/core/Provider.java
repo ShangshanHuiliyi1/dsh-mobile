@@ -23,6 +23,8 @@ public class Provider {
     public String model = "";
     /** 该渠道/模型是否支持 function calling */
     public boolean toolsEnabled = true;
+    /** 该渠道/模型是否支持图片输入（多模态） */
+    public boolean vision;
     public String authStyle = AUTH_BEARER;
     /** 额外请求头，每行 "Key: Value"，可留空 */
     public String extraHeaders = "";
@@ -85,6 +87,7 @@ public class Provider {
         p.apiKey = apiKey;
         p.model = model;
         p.toolsEnabled = toolsEnabled;
+        p.vision = vision;
         p.authStyle = authStyle;
         p.extraHeaders = extraHeaders;
         return p;
@@ -100,6 +103,7 @@ public class Provider {
             o.put("apiKey", apiKey);
             o.put("model", model);
             o.put("toolsEnabled", toolsEnabled);
+            o.put("vision", vision);
             o.put("authStyle", authStyle);
             o.put("extraHeaders", extraHeaders);
         } catch (Exception ignored) {
@@ -116,6 +120,7 @@ public class Provider {
         p.apiKey = o.optString("apiKey", "");
         p.model = o.optString("model", "");
         p.toolsEnabled = o.optBoolean("toolsEnabled", true);
+        p.vision = o.optBoolean("vision", false);
         p.authStyle = o.optString("authStyle", AUTH_BEARER);
         p.extraHeaders = o.optString("extraHeaders", "");
         return p;

@@ -21,6 +21,9 @@ public class Message {
     public String reasoning = "";
     public List<ToolCall> toolCalls = new ArrayList<>();
 
+    /** 用户消息上的对话附件 */
+    public List<Attachment> attachments = new ArrayList<>();
+
     /** role == tool 时使用 */
     public String toolCallId;
     public String toolName;
@@ -83,6 +86,11 @@ public class Message {
             if (toolCallId != null) o.put("toolCallId", toolCallId);
             if (toolName != null) o.put("toolName", toolName);
             if (error) o.put("error", true);
+            if (!attachments.isEmpty()) {
+                JSONArray arr = new JSONArray();
+                for (Attachment a : attachments) arr.put(a.toJson());
+                o.put("attachments", arr);
+            }
             o.put("ts", ts);
         } catch (Exception ignored) {
         }
@@ -104,6 +112,13 @@ public class Message {
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject t = arr.optJSONObject(i);
                 if (t != null) m.toolCalls.add(ToolCall.fromJson(t));
+            }
+        }
+        JSONArray atts = o.optJSONArray("attachments");
+        if (atts != null) {
+            for (int i = 0; i < atts.length(); i++) {
+                JSONObject a = atts.optJSONObject(i);
+                if (a != null) m.attachments.add(Attachment.fromJson(a));
             }
         }
         return m;

@@ -42,6 +42,13 @@
             android:src="@drawable/ic_plus_24" />
 
         <ImageView
+            android:id="@+id/btnFiles"
+            style="@style/IconButton"
+            android:layout_marginLeft="2dp"
+            android:contentDescription="工作区文件"
+            android:src="@drawable/ic_folder_24" />
+
+        <ImageView
             android:id="@+id/btnSessions"
             style="@style/IconButton"
             android:layout_marginLeft="2dp"
@@ -81,6 +88,26 @@
         android:layout_height="1dp"
         android:background="@color/line_soft" />
 
+    <HorizontalScrollView
+        android:id="@+id/attachScroller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/attachBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="14dp"
+            android:paddingTop="10dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="2dp" />
+    </HorizontalScrollView>
+
     <LinearLayout
         android:id="@+id/inputbar"
         android:layout_width="match_parent"
@@ -94,13 +121,13 @@
         android:paddingBottom="10dp">
 
         <ImageView
-            android:id="@+id/btnFiles"
+            android:id="@+id/btnAttach"
             style="@style/IconButton"
             android:layout_gravity="bottom"
             android:layout_marginLeft="-6dp"
             android:layout_marginRight="4dp"
-            android:contentDescription="工作区文件"
-            android:src="@drawable/ic_folder_24" />
+            android:contentDescription="添加附件"
+            android:src="@drawable/ic_attach_24" />
 
         <EditText
             android:id="@+id/input"

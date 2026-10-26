@@ -110,7 +110,7 @@ public class ChatApi {
         boolean degraded = false;
 
         for (int attempt = 0; attempt < 2; attempt++) {
-            String body = buildBody(provider.model, systemPrompt, history, temperature, maxTokens, useTools);
+            String body = buildBody(provider, systemPrompt, history, temperature, maxTokens, useTools);
             HttpURLConnection c = open(provider);
             conn = c;
             post(c, body);
@@ -390,10 +390,42 @@ public class ChatApi {
 
     // --------------------------------------------------------------- request
 
-    private String buildBody(String model, String systemPrompt, List<Message> history,
+    /** 渠道支持多模态且消息里带图片时，返回 OpenAI 风格的内容数组；否则返回 null */
+    private JSONArray userParts(Message m, boolean vision) {
+        if (!vision || m.attachments.isEmpty()) return null;
+        boolean hasImage = false;
+        for (Attachment a : m.attachments) {
+            if (a.isImage()) {
+                hasImage = true;
+                break;
+            }
+        }
+        if (!hasImage) return null;
+        try {
+            JSONArray arr = new JSONArray();
+            String text = Attachments.composeText(m.content, m.attachments, true);
+            if (!text.trim().isEmpty()) {
+                arr.put(new JSONObject().put("type", "text").put("text", text));
+            }
+            for (Attachment a : m.attachments) {
+                if (!a.isImage()) continue;
+                String b64 = Attachments.base64(a);
+                if (b64 == null) continue;
+                String mime = a.mime == null || a.mime.isEmpty() ? "image/png" : a.mime;
+                arr.put(new JSONObject()
+                        .put("type", "image_url")
+                        .put("image_url", new JSONObject().put("url", "data:" + mime + ";base64," + b64)));
+            }
+            return arr.length() > 0 ? arr : null;
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    private String buildBody(Provider provider, String systemPrompt, List<Message> history,
                              float temperature, int maxTokens, JSONArray tools) throws JSONException {
         JSONObject body = new JSONObject();
-        body.put("model", model);
+        body.put("model", provider.model);
         body.put("stream", true);
         body.put("temperature", temperature);
         body.put("max_tokens", maxTokens);
@@ -445,9 +477,11 @@ public class ChatApi {
                 }
                 msgs.put(o);
             } else {
-                msgs.put(new JSONObject()
-                        .put("role", "user")
-                        .put("content", m.content == null ? "" : m.content));
+                JSONObject u = new JSONObject().put("role", "user");
+                JSONArray parts = userParts(m, provider.vision);
+                if (parts != null) u.put("content", parts);
+                else u.put("content", Attachments.composeText(m.content, m.attachments, provider.vision));
+                msgs.put(u);
             }
         }
         if (!pending.isEmpty()) {

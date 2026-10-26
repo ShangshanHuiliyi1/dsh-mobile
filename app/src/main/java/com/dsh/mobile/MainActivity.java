@@ -2,6 +2,7 @@ package com.dsh.mobile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -21,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dsh.mobile.core.Agent;
+import com.dsh.mobile.core.Attachment;
+import com.dsh.mobile.core.Attachments;
 import com.dsh.mobile.core.Config;
 import com.dsh.mobile.core.Message;
 import com.dsh.mobile.core.Provider;
@@ -52,6 +55,11 @@ public class MainActivity extends Activity implements Agent.Listener {
     private String lastVisibleRole;
     private int sendState = -1;
 
+    private static final int REQ_ATTACH = 2001;
+    private final java.util.List<Attachment> pending = new java.util.ArrayList<>();
+    private LinearLayout attachBar;
+    private View attachScroller;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +74,17 @@ public class MainActivity extends Activity implements Agent.Listener {
         send = findViewById(R.id.send);
         title = findViewById(R.id.title);
         status = findViewById(R.id.status);
+        attachBar = findViewById(R.id.attachBar);
+        attachScroller = findViewById(R.id.attachScroller);
 
         maxBubble = (int) (getResources().getDisplayMetrics().widthPixels * 0.82f);
+
+        findViewById(R.id.btnAttach).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickAttachments();
+            }
+        });
 
         scroll.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
@@ -282,7 +299,7 @@ public class MainActivity extends Activity implements Agent.Listener {
     private void updateSendButton(boolean busy) {
         if (send == null) return;
         boolean hasText = input != null && input.getText().toString().trim().length() > 0;
-        int state = busy ? 2 : (hasText ? 1 : 0);
+        int state = busy ? 2 : ((hasText || !pending.isEmpty()) ? 1 : 0);
         if (sendState == state) return;
         sendState = state;
 
@@ -387,7 +404,8 @@ public class MainActivity extends Activity implements Agent.Listener {
 
     private void doSend() {
         String text = input.getText().toString().trim();
-        if (text.isEmpty()) return;
+        boolean hasAttachments = !pending.isEmpty();
+        if (text.isEmpty() && !hasAttachments) return;
         if (!cfg.hasApiKey()) {
             promptKey(false);
             return;
@@ -398,9 +416,110 @@ public class MainActivity extends Activity implements Agent.Listener {
         }
         hideKeyboard();
         input.setText("");
+        java.util.List<Attachment> atts = new java.util.ArrayList<>(pending);
+        pending.clear();
+        renderAttachBar();
+        updateSendButton(false);
         if (emptyState.getParent() != null) feed.removeView(emptyState);
         follow = true;
-        agent.send(text);
+        agent.send(text, atts);
+    }
+
+    // --------------------------------------------------------------- 对话附件
+
+    private void pickAttachments() {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("*/*");
+        i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        startActivityForResult(i, REQ_ATTACH);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQ_ATTACH || resultCode != RESULT_OK || data == null) return;
+        final java.util.List<Uri> uris = new java.util.ArrayList<>();
+        ClipData clip = data.getClipData();
+        if (clip != null) {
+            for (int i = 0; i < clip.getItemCount(); i++) {
+                Uri u = clip.getItemAt(i).getUri();
+                if (u != null) uris.add(u);
+            }
+        } else if (data.getData() != null) {
+            uris.add(data.getData());
+        }
+        if (uris.isEmpty()) return;
+        importAttachments(uris);
+    }
+
+    private void importAttachments(final java.util.List<Uri> uris) {
+        toast("正在处理 " + uris.size() + " 个附件…");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final java.util.List<Attachment> ok = new java.util.ArrayList<>();
+                final StringBuilder failed = new StringBuilder();
+                for (Uri u : uris) {
+                    try {
+                        ok.add(Attachments.importUri(MainActivity.this, u));
+                    } catch (Exception e) {
+                        if (failed.length() < 80) {
+                            String last = u.getLastPathSegment();
+                            failed.append(last == null ? "文件" : last).append(' ');
+                        }
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pending.addAll(ok);
+                        renderAttachBar();
+                        updateSendButton(agent.isRunning());
+                        if (!failed.toString().trim().isEmpty()) {
+                            toast("部分文件无法添加：" + failed.toString().trim());
+                        }
+                        boolean hasImage = false;
+                        for (Attachment a : ok) if (a.isImage()) hasImage = true;
+                        if (hasImage && !cfg.providers().active().vision) {
+                            toast("图片需要渠道开启「支持图片输入」；当前只会发送文件名说明。");
+                        }
+                    }
+                });
+            }
+        }, "dsh-attach").start();
+    }
+
+    private void renderAttachBar() {
+        if (attachBar == null) return;
+        attachBar.removeAllViews();
+        boolean empty = pending.isEmpty();
+        attachScroller.setVisibility(empty ? View.GONE : View.VISIBLE);
+        for (int i = 0; i < pending.size(); i++) {
+            final Attachment a = pending.get(i);
+            TextView chip = new TextView(this);
+            chip.setText(a.name + "  ·  " + Attachments.human(a.size) + "   ×");
+            chip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11.5f);
+            chip.setTextColor(color(R.color.text_dim));
+            chip.setBackgroundResource(R.drawable.bg_chip);
+            chip.setPadding(dp(12), dp(7), dp(12), dp(7));
+            chip.setSingleLine(true);
+            chip.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+            chip.setMaxWidth(dp(220));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.rightMargin = dp(8);
+            chip.setLayoutParams(lp);
+            chip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    pending.remove(a);
+                    renderAttachBar();
+                    updateSendButton(agent.isRunning());
+                }
+            });
+            attachBar.addView(chip);
+        }
     }
 
     private void promptKey(final boolean firstRun) {

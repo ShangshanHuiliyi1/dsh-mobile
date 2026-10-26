@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dsh.mobile.R;
+import com.dsh.mobile.core.Attachment;
+import com.dsh.mobile.core.Attachments;
 import com.dsh.mobile.core.Message;
 import com.dsh.mobile.core.ToolCall;
 
@@ -80,14 +82,37 @@ public class MessageRow extends LinearLayout {
         bubble.setBackgroundResource(R.drawable.bg_bubble_user);
         bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
 
-        TextView tv = new TextView(ctx);
-        tv.setText(msg.content);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
-        tv.setTextColor(color(R.color.text));
-        tv.setLineSpacing(dp(4), 1f);
-        tv.setTextIsSelectable(true);
-        if (maxBubble > 0) tv.setMaxWidth(maxBubble);
-        bubble.addView(tv);
+        if (!msg.content.isEmpty()) {
+            TextView tv = new TextView(ctx);
+            tv.setText(msg.content);
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
+            tv.setTextColor(color(R.color.text));
+            tv.setLineSpacing(dp(4), 1f);
+            tv.setTextIsSelectable(true);
+            if (maxBubble > 0) tv.setMaxWidth(maxBubble);
+            // 竖直 LinearLayout 的默认参数是 MATCH_PARENT 宽，这里必须显式 WRAP_CONTENT，
+            // 否则会被同级的附件 chip 挤窄，导致文字换行后被裁切。
+            tv.setLayoutParams(new LayoutParams(
+                    LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            bubble.addView(tv);
+        }
+
+        for (int i = 0; i < msg.attachments.size(); i++) {
+            Attachment a = msg.attachments.get(i);
+            TextView chip = new TextView(ctx);
+            chip.setText(a.name + "  ·  " + Attachments.human(a.size));
+            chip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11.5f);
+            chip.setTextColor(color(R.color.text_dim));
+            chip.setBackgroundResource(R.drawable.bg_chip);
+            chip.setPadding(dp(10), dp(6), dp(10), dp(6));
+            chip.setSingleLine(true);
+            chip.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+            chip.setMaxWidth(Math.max(dp(160), maxBubble - dp(28)));
+            LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            if (i > 0 || !msg.content.isEmpty()) lp.topMargin = dp(8);
+            chip.setLayoutParams(lp);
+            bubble.addView(chip);
+        }
 
         addView(bubble, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
     }

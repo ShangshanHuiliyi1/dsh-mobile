@@ -1,5 +1,6 @@
 // 本地 mock：模拟 DeepSeek /chat/completions 的 SSE 流与 function calling，用于端到端自测。
 const http = require('http');
+const fs = require('fs');
 
 const PORT = 8787;
 const LOG = [];
@@ -82,6 +83,7 @@ const server = http.createServer((req, res) => {
       const hasTools = Array.isArray(parsed.tools) && parsed.tools.length > 0;
       LOG.push({ at: Date.now(), msgs: msgs.length, hasTool, hasTools, model: parsed.model });
       console.log('[req]', 'messages=' + msgs.length, 'tool_result=' + hasTool, 'tools=' + hasTools);
+      try { fs.writeFileSync('D:/mine/dsh-mobile/build/last_request.json', body, 'utf8'); } catch (e) { }
 
       // 模拟"该渠道不支持工具调用"：带 tools 一律 400，逼客户端降级重试
       const lastUserMsg = msgs.slice().reverse().find((m) => m.role === 'user');

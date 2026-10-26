@@ -13,8 +13,8 @@ $Dist     = "$Root\dist"
 $env:JAVA_HOME = $JavaHome
 $env:PATH = "$JavaHome\bin;$BT;$env:PATH"
 
-$VersionCode = 5
-$VersionName = "1.4.0"
+$VersionCode = 6
+$VersionName = "1.5.0"
 
 Write-Host "== 0/7 准备目录" -ForegroundColor Cyan
 foreach ($d in "$Out\gen", "$Out\classes", "$Out\dex", $Dist) {
